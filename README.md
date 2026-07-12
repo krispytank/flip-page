@@ -1,40 +1,143 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/pages/api-reference/create-next-app).
+# FlipPage - Interactive Document Viewer
 
-## Getting Started
+A Next.js application that provides an interactive flip page experience for viewing documents with realistic page-turning effects and sounds.
 
-First, run the development server:
+## Features
 
+- **Realistic Page Flipping**: CSS 3D transforms for smooth page-turning animations
+- **Sound Effects**: Realistic page-turning sounds using Web Audio API
+- **PDF Support**: Upload and view PDF documents
+- **Image Support**: View images as pages in the flipbook
+- **Navigation**: Previous/next buttons, keyboard arrows, and click navigation
+- **Zoom Controls**: Zoom in/out with buttons or keyboard shortcuts
+- **Fullscreen Mode**: Press F for fullscreen viewing
+- **Responsive Design**: Works on desktop and mobile devices
+- **Touch Support**: Optimized for touch devices
+
+## Installation
+
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone <repository-url>
+cd flippage
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+npm install
+```
 
-You can start editing the page by modifying `pages/index.js`. The page auto-updates as you edit the file.
+3. Start the development server:
+```bash
+npm run dev
+```
 
-[API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.js`.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/pages/building-your-application/routing/api-routes) instead of React pages.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/pages/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Main Page
 
-## Learn More
+Visit the main page at `http://localhost:3000` to:
+- Upload PDF or image documents
+- Load a sample flipbook
+- Access the interactive viewer
 
-To learn more about Next.js, take a look at the following resources:
+### Test Page
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn-pages-router) - an interactive Next.js tutorial.
+Visit the test page at `http://localhost:3000/test` to:
+- See a working example of the flipbook
+- Test navigation and zoom controls
+- Experience the page-flipping animations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Navigation
 
-## Deploy on Vercel
+- **Arrow Keys**: Use left/right arrow keys to navigate between pages
+- **Click**: Click on pages to navigate forward/backward
+- **Buttons**: Use the navigation buttons at the bottom of the viewer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Zoom Controls
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/pages/building-your-application/deploying) for more details.
+- **+/- Keys**: Use plus/minus keys to zoom in/out
+- **Buttons**: Use the zoom buttons at the bottom of the viewer
+- **Reset**: Click the reset button to return to 100% zoom
+
+### Keyboard Shortcuts
+
+- `←` / `→`: Navigate between pages
+- `+` / `-`: Zoom in/out
+- `0`: Reset zoom to 100%
+- `F`: Toggle fullscreen mode
+
+## Project Structure
+
+```
+flippage/
+├── src/
+│   ├── components/
+│   │   ├── FlipBook.js           # Main flip page component
+│   │   ├── NavigationControls.js # Navigation buttons
+│   │   └── ZoomControls.js       # Zoom controls
+│   └── pages/
+│       ├── index.js              # Main page
+│       └── test.js               # Test page
+├── public/
+│   └── sounds/
+│       └── page-flip.mp3         # Page flip sound effect
+└── package.json
+```
+
+## Technologies Used
+
+- **Next.js**: React framework for server-side rendering
+- **React**: JavaScript library for building user interfaces
+- **CSS 3D Transforms**: For realistic page-flipping animations
+- **Web Audio API**: For generating page-turning sounds
+
+## Customization
+
+### Adding Sound Effects
+
+The current implementation uses the Web Audio API to generate synthetic page-turning sounds. To use custom sound files:
+
+1. Place your sound file in `public/sounds/page-flip.mp3`
+2. Update the `playFlipSound` function in `FlipBook.js` to load and play the file
+
+### Customizing Colors
+
+Edit the CSS styles in the components to customize the color scheme. Each component uses styled-jsx for scoped styling.
+
+### Adding New Document Types
+
+Extend the `FlipBook.js` component to support additional document formats by adding new rendering logic in the `renderPageContent` function.
+
+## Browser Support
+
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+
+## Development
+
+### Building for Production
+
+```bash
+npm run build
+```
+
+### Starting Production Server
+
+```bash
+npm start
+```
+
+### Linting
+
+```bash
+npm run lint
+```
+
+## License
+
+MIT License
