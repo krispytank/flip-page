@@ -2,7 +2,7 @@ import "@/styles/globals.css";
 import Layout from "@/components/Layout";
 import { useRouter } from "next/router";
 
-const noLayoutRoutes = ['/viewer'];
+const noLayoutRoutes = ['/viewer', '/login', '/admin'];
 
 export default function App({ Component, pageProps }) {
   const router = useRouter();

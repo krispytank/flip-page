@@ -62,6 +62,10 @@ async function handleGet(req, res) {
 }
 
 async function handlePost(req, res) {
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
   try {
     const uploadDir = path.join(process.cwd(), 'public', 'documents');
     
@@ -133,6 +137,10 @@ async function handlePost(req, res) {
 }
 
 async function handleDelete(req, res) {
+  if (!isAuthenticated(req)) {
+    return res.status(401).json({ error: 'Authentication required' });
+  }
+
   try {
     const { id } = req.query;
     

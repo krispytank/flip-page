@@ -134,7 +134,7 @@ export default function Home() {
             </div>
             <div className="hero-actions">
               <a href="#catalogue" className="btn btn-primary">Browse Library</a>
-              <Link href="/admin" className="btn btn-hero">Upload Documents</Link>
+              <Link href="/login" className="btn btn-hero">Upload Documents</Link>
             </div>
           </div>
         </div>
@@ -238,7 +238,7 @@ export default function Home() {
           ) : filteredDocuments.length === 0 ? (
             <div className="empty-box">
               <p className="empty-text">No documents found.</p>
-              <Link href="/admin" className="btn btn-primary">Upload Documents</Link>
+              <Link href="/login" className="btn btn-primary">Upload Documents</Link>
             </div>
           ) : (
             <div className="doc-grid">

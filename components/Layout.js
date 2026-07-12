@@ -25,7 +25,7 @@ export default function Layout({ children }) {
             </span>
           </div>
           <div className="top-bar-right">
-            <Link href="/admin" className="top-bar-link">Admin Panel</Link>
+            <Link href="/login" className="top-bar-link">Admin Panel</Link>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@ export default function Layout({ children }) {
           <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
             <Link href="/" className="nav-link" onClick={() => setMenuOpen(false)}>Home</Link>
             <Link href="/#catalogue" className="nav-link" onClick={() => setMenuOpen(false)}>Catalogue</Link>
-            <Link href="/admin" className="nav-link" onClick={() => setMenuOpen(false)}>Upload</Link>
+            <Link href="/login" className="nav-link" onClick={() => setMenuOpen(false)}>Upload</Link>
           </nav>
 
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
@@ -100,7 +100,7 @@ export default function Layout({ children }) {
               <ul>
                 <li><Link href="/">Home</Link></li>
                 <li><Link href="/#catalogue">Document Catalogue</Link></li>
-                <li><Link href="/admin">Upload Documents</Link></li>
+                <li><Link href="/login">Upload Documents</Link></li>
               </ul>
             </div>
 
