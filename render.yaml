@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: flippage
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: ADMIN_USERNAME
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+    disk:
+      name: flippage-data
+      mountPath: /app/public/documents
+      sizeGB: 1
+    healthCheckPath: /
+    autoDeploy: true
