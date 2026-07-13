@@ -94,7 +94,10 @@ export default function Home() {
   const getFileIcon = (mimetype) => {
     if (mimetype.includes('pdf')) return 'pdf';
     if (mimetype.includes('image')) return 'image';
-    if (mimetype.includes('presentation') || mimetype.includes('powerpoint')) return 'presentation';
+    if (mimetype.includes('presentation') || mimetype.includes('powerpoint') || mimetype.includes('opendocument.presentation')) return 'presentation';
+    if (mimetype.includes('word') || mimetype.includes('document') || mimetype.includes('msword')) return 'document';
+    if (mimetype.includes('excel') || mimetype.includes('spreadsheet') || mimetype.includes('ms-excel')) return 'spreadsheet';
+    if (mimetype.includes('text') || mimetype.includes('csv')) return 'text';
     return 'document';
   };
 
@@ -474,6 +477,16 @@ export default function Home() {
           color: #3730a3;
         }
 
+        .recent-icon.spreadsheet {
+          background: #d1fae5;
+          color: #047857;
+        }
+
+        .recent-icon.text {
+          background: #f3f4f6;
+          color: #374151;
+        }
+
         .recent-info {
           flex: 1;
           min-width: 0;
@@ -627,6 +640,16 @@ export default function Home() {
         .doc-type-icon.document {
           background: #e0e7ff;
           color: #3730a3;
+        }
+
+        .doc-type-icon.spreadsheet {
+          background: #d1fae5;
+          color: #047857;
+        }
+
+        .doc-type-icon.text {
+          background: #f3f4f6;
+          color: #374151;
         }
 
         .doc-category {

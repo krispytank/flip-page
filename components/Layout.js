@@ -219,15 +219,16 @@ export default function Layout({ children }) {
 
         .nav-link {
           padding: 0.6rem 1.25rem;
-          color: rgba(255,255,255,0.85);
-          font-size: 0.9rem;
-          font-weight: 500;
+          color: rgba(255,255,255,0.95);
+          font-size: 0.95rem;
+          font-weight: 600;
           border-radius: var(--radius-sm);
           transition: all var(--transition-fast);
+          letter-spacing: 0.01em;
         }
 
         .nav-link:hover {
-          background: rgba(255,255,255,0.1);
+          background: rgba(255,255,255,0.15);
           color: var(--white);
         }
 

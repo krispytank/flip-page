@@ -162,7 +162,10 @@ export default function Admin() {
   const getFileIcon = (mimetype) => {
     if (mimetype.includes('pdf')) return '📕';
     if (mimetype.includes('image')) return '🖼️';
-    if (mimetype.includes('presentation') || mimetype.includes('powerpoint')) return '📊';
+    if (mimetype.includes('presentation') || mimetype.includes('powerpoint') || mimetype.includes('opendocument.presentation')) return '📊';
+    if (mimetype.includes('word') || mimetype.includes('document') || mimetype.includes('msword')) return '📝';
+    if (mimetype.includes('excel') || mimetype.includes('spreadsheet') || mimetype.includes('ms-excel')) return '📈';
+    if (mimetype.includes('text') || mimetype.includes('csv')) return '📄';
     return '📄';
   };
 
@@ -178,9 +181,9 @@ export default function Admin() {
           </div>
         </div>
         <style jsx>{`
-          .admin-layout { display: flex; min-height: 100vh; background: var(--secondary-50); }
-          .main-content { flex: 1; }
-          .spinner-large { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--gold-500); border-radius: 50%; animation: spin 0.8s linear infinite; }
+          .admin-layout { display: flex; min-height: 100vh; background: var(--cream-50); }
+          .main-content { flex: 1; display: flex; align-items: center; justify-content: center; }
+          .spinner-large { width: 40px; height: 40px; border: 3px solid var(--cream-200); border-top-color: var(--gold-500); border-radius: 50%; animation: spin 0.8s linear infinite; }
           @keyframes spin { to { transform: rotate(360deg); } }
         `}</style>
       </>
@@ -253,6 +256,15 @@ export default function Admin() {
         {/* Main Content */}
         <main className="main-content">
           <div className="content-header">
+            <div className="header-top-row">
+              <Link href="/" className="back-to-site">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="19" y1="12" x2="5" y2="12"></line>
+                  <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Site
+              </Link>
+            </div>
             <h1>Document Management</h1>
             <p>Upload, organize, and manage your documents</p>
           </div>
@@ -277,7 +289,7 @@ export default function Admin() {
                         type="file"
                         id="document"
                         onChange={handleFileChange}
-                        accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.ppt,.pptx"
+                        accept=".pdf,.jpg,.jpeg,.png,.gif,.webp,.svg,.bmp,.tiff,.ico,.avif,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.rtf,.odp"
                         className="file-input"
                       />
                       <label htmlFor="document" className="file-label">
@@ -295,7 +307,7 @@ export default function Admin() {
                               <line x1="12" y1="3" x2="12" y2="15"></line>
                             </svg>
                             <span>Click to select file</span>
-                            <span className="file-hint">PDF, Images, or PowerPoint (max 50MB)</span>
+                            <span className="file-hint">PDF, Images, Word, Excel, PowerPoint, Text (max 50MB)</span>
                           </div>
                         )}
                       </label>
@@ -470,22 +482,22 @@ export default function Admin() {
         .admin-layout {
           display: flex;
           min-height: 100vh;
-          background: var(--secondary-50);
+          background: var(--cream-50);
         }
 
         .sidebar {
           width: 260px;
-          background: white;
-          border-right: 1px solid var(--secondary-200);
+          background: var(--navy-700);
           display: flex;
           flex-direction: column;
           position: fixed;
           height: 100vh;
+          z-index: 50;
         }
 
         .sidebar-header {
           padding: 1.5rem;
-          border-bottom: 1px solid var(--secondary-100);
+          border-bottom: 1px solid rgba(200, 169, 81, 0.15);
           display: flex;
           align-items: center;
         }
@@ -495,13 +507,14 @@ export default function Admin() {
           align-items: center;
           gap: 0.75rem;
           text-decoration: none;
-          font-size: 1.5rem;
+          font-size: 1.4rem;
           font-weight: 700;
-          color: var(--secondary-900);
+          color: var(--white);
+          font-family: 'Merriweather', Georgia, serif;
         }
 
         .logo-icon {
-          font-size: 2rem;
+          font-size: 1.8rem;
         }
 
         .sidebar-nav {
@@ -509,46 +522,46 @@ export default function Admin() {
           flex: 1;
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 0.35rem;
         }
 
         .nav-item {
           display: flex;
           align-items: center;
           gap: 0.75rem;
-          padding: 0.875rem 1rem;
-          color: var(--secondary-600);
+          padding: 0.8rem 1rem;
+          color: rgba(255, 255, 255, 0.75);
           text-decoration: none;
-          border-radius: var(--radius-lg);
+          border-radius: var(--radius-md);
           transition: all var(--transition-fast);
           white-space: nowrap;
+          font-weight: 500;
+          font-size: 0.9rem;
+          border: none;
+          background: none;
+          cursor: pointer;
+          font-family: inherit;
+          width: 100%;
+          text-align: left;
         }
 
         .nav-item:hover {
-          background: var(--secondary-100);
-          color: var(--secondary-900);
+          background: rgba(255, 255, 255, 0.1);
+          color: var(--white);
         }
 
         .nav-item.active {
-          background: var(--primary-50);
-          color: var(--primary-600);
+          background: rgba(200, 169, 81, 0.15);
+          color: var(--gold-400);
         }
 
         .logout-btn {
           margin-top: auto;
-          background: none;
-          border: none;
-          cursor: pointer;
-          font-family: inherit;
-          font-size: inherit;
-          width: 100%;
-          text-align: left;
-          color: var(--secondary-600);
         }
 
         .logout-btn:hover {
-          background: #fee2e2;
-          color: #dc2626;
+          background: rgba(220, 38, 38, 0.15);
+          color: #fca5a5;
         }
 
         .main-content {
@@ -559,36 +572,67 @@ export default function Admin() {
 
         .content-header {
           margin-bottom: 2rem;
+          padding-bottom: 1.5rem;
+          border-bottom: 1px solid var(--border);
         }
 
         .content-header h1 {
+          font-family: 'Merriweather', Georgia, serif;
           font-size: 1.75rem;
           font-weight: 700;
-          color: var(--secondary-900);
+          color: var(--navy-700);
           margin-bottom: 0.25rem;
         }
 
         .content-header p {
-          color: var(--secondary-500);
+          color: var(--text-muted);
+        }
+
+        .header-top-row {
+          margin-bottom: 0.75rem;
+        }
+
+        .back-to-site {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--gold-500);
+          background: rgba(200, 169, 81, 0.1);
+          border: 1px solid rgba(200, 169, 81, 0.25);
+          border-radius: var(--radius-sm);
+          text-decoration: none;
+          transition: all var(--transition-fast);
+        }
+
+        .back-to-site:hover {
+          background: rgba(200, 169, 81, 0.2);
+          border-color: var(--gold-500);
+          color: var(--gold-400);
         }
 
         .alert {
           padding: 1rem 1.5rem;
-          border-radius: var(--radius-lg);
+          border-radius: var(--radius-md);
           margin-bottom: 1.5rem;
           display: flex;
           align-items: center;
           gap: 0.5rem;
+          font-weight: 500;
         }
 
         .alert-success {
           background: #d1fae5;
           color: #065f46;
+          border: 1px solid #a7f3d0;
         }
 
         .alert-error {
-          background: #fee2e2;
+          background: #fef2f2;
           color: #991b1b;
+          border: 1px solid #fecaca;
         }
 
         .content-grid {
@@ -598,17 +642,21 @@ export default function Admin() {
         }
 
         .section-card {
-          background: white;
-          border-radius: var(--radius-xl);
-          box-shadow: var(--shadow-md);
+          background: var(--white);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
+          box-shadow: var(--shadow-sm);
           padding: 1.5rem;
         }
 
         .section-card h2 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          color: var(--secondary-900);
+          font-family: 'Merriweather', Georgia, serif;
+          font-size: 1.15rem;
+          font-weight: 700;
+          color: var(--navy-700);
           margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid var(--border);
         }
 
         .section-header {
@@ -616,6 +664,17 @@ export default function Admin() {
           justify-content: space-between;
           align-items: center;
           margin-bottom: 1.5rem;
+          padding-bottom: 0.75rem;
+          border-bottom: 1px solid var(--border);
+        }
+
+        .badge {
+          background: var(--navy-700);
+          color: var(--gold-400);
+          padding: 0.25rem 0.75rem;
+          border-radius: var(--radius-sm);
+          font-size: 0.8rem;
+          font-weight: 600;
         }
 
         .upload-form {
@@ -627,13 +686,31 @@ export default function Admin() {
         .form-group {
           display: flex;
           flex-direction: column;
-          gap: 0.5rem;
+          gap: 0.4rem;
         }
 
         .form-group label {
-          font-size: 0.875rem;
-          font-weight: 500;
-          color: var(--secondary-700);
+          font-size: 0.85rem;
+          font-weight: 600;
+          color: var(--navy-700);
+        }
+
+        .input {
+          width: 100%;
+          padding: 0.65rem 0.85rem;
+          font-size: 0.9rem;
+          border: 1px solid var(--border);
+          border-radius: var(--radius-sm);
+          background: var(--cream-50);
+          font-family: inherit;
+          color: var(--text-primary);
+          transition: border-color var(--transition-fast);
+        }
+
+        .input:focus {
+          outline: none;
+          border-color: var(--gold-500);
+          box-shadow: 0 0 0 3px rgba(200, 169, 81, 0.1);
         }
 
         .form-row {
@@ -661,15 +738,15 @@ export default function Admin() {
         .file-label {
           display: block;
           padding: 1.5rem;
-          border: 2px dashed var(--secondary-300);
-          border-radius: var(--radius-lg);
+          border: 2px dashed var(--border);
+          border-radius: var(--radius-md);
           cursor: pointer;
           transition: all var(--transition-fast);
         }
 
         .file-label:hover {
-          border-color: var(--primary-500);
-          background: var(--primary-50);
+          border-color: var(--gold-500);
+          background: rgba(200, 169, 81, 0.05);
         }
 
         .file-placeholder {
@@ -677,16 +754,16 @@ export default function Admin() {
           flex-direction: column;
           align-items: center;
           gap: 0.5rem;
-          color: var(--secondary-500);
+          color: var(--text-muted);
         }
 
         .file-placeholder svg {
-          color: var(--secondary-400);
+          color: var(--navy-400);
         }
 
         .file-hint {
           font-size: 0.75rem;
-          color: var(--secondary-400);
+          color: var(--text-light);
         }
 
         .file-selected {
@@ -700,13 +777,13 @@ export default function Admin() {
         }
 
         .file-name {
-          font-weight: 500;
-          color: var(--secondary-900);
+          font-weight: 600;
+          color: var(--navy-700);
         }
 
         .file-size {
-          font-size: 0.875rem;
-          color: var(--secondary-500);
+          font-size: 0.85rem;
+          color: var(--text-muted);
         }
 
         .image-preview {
@@ -716,21 +793,22 @@ export default function Admin() {
         .image-preview img {
           max-width: 100%;
           max-height: 200px;
-          border-radius: var(--radius-lg);
+          border-radius: var(--radius-md);
           object-fit: contain;
+          border: 1px solid var(--border);
         }
 
         .progress-bar {
           position: relative;
           height: 8px;
-          background: var(--secondary-200);
-          border-radius: var(--radius-full);
+          background: var(--cream-200);
+          border-radius: 999px;
           overflow: hidden;
         }
 
         .progress-fill {
           height: 100%;
-          background: var(--gradient-primary);
+          background: var(--gold-500);
           transition: width 0.3s ease;
         }
 
@@ -739,26 +817,53 @@ export default function Admin() {
           right: 0;
           top: -20px;
           font-size: 0.75rem;
-          color: var(--secondary-600);
+          font-weight: 600;
+          color: var(--navy-700);
         }
 
         .btn-block {
           width: 100%;
+          padding: 0.8rem 1.5rem;
+          font-size: 0.95rem;
+          font-weight: 700;
+          background: var(--gold-500);
+          color: var(--navy-900);
+          border: none;
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: all var(--transition-fast);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          font-family: 'Source Sans 3', sans-serif;
+          letter-spacing: 0.02em;
+        }
+
+        .btn-block:hover:not(:disabled) {
+          background: var(--gold-400);
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(200, 169, 81, 0.3);
+        }
+
+        .btn-block:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
         }
 
         .spinner-small {
           width: 16px;
           height: 16px;
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          border-top-color: white;
+          border: 2px solid rgba(13, 27, 42, 0.2);
+          border-top-color: var(--navy-900);
           border-radius: 50%;
-          animation: spin 1s linear infinite;
+          animation: spin 0.8s linear infinite;
         }
 
         .documents-list {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
+          gap: 0.5rem;
           max-height: 600px;
           overflow-y: auto;
         }
@@ -768,13 +873,28 @@ export default function Admin() {
           align-items: center;
           gap: 1rem;
           padding: 1rem;
-          background: var(--secondary-50);
-          border-radius: var(--radius-lg);
+          background: var(--cream-50);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-md);
           transition: all var(--transition-fast);
         }
 
         .document-item:hover {
-          background: var(--secondary-100);
+          border-color: var(--gold-500);
+          background: var(--white);
+          box-shadow: var(--shadow-sm);
+        }
+
+        .document-icon {
+          font-size: 1.5rem;
+          width: 42px;
+          height: 42px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: var(--cream-100);
+          border-radius: var(--radius-sm);
+          flex-shrink: 0;
         }
 
         .document-info {
@@ -783,10 +903,11 @@ export default function Admin() {
         }
 
         .document-info h4 {
-          font-size: 0.9375rem;
-          font-weight: 500;
-          color: var(--secondary-900);
-          margin-bottom: 0.25rem;
+          font-family: 'Source Sans 3', sans-serif;
+          font-size: 0.95rem;
+          font-weight: 600;
+          color: var(--navy-700);
+          margin-bottom: 0.2rem;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
@@ -796,7 +917,7 @@ export default function Admin() {
           display: flex;
           gap: 0.5rem;
           font-size: 0.75rem;
-          color: var(--secondary-500);
+          color: var(--text-muted);
         }
 
         .document-actions {
@@ -804,9 +925,29 @@ export default function Admin() {
           gap: 0.5rem;
         }
 
+        .btn-ghost {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          padding: 0.45rem;
+          background: transparent;
+          color: var(--text-secondary);
+          border: 1px solid var(--border);
+          border-radius: var(--radius-sm);
+          cursor: pointer;
+          transition: all var(--transition-fast);
+        }
+
+        .btn-ghost:hover {
+          background: var(--cream-100);
+          border-color: var(--navy-400);
+          color: var(--navy-700);
+        }
+
         .btn-danger:hover {
-          background: #fee2e2;
+          background: #fef2f2;
           color: #dc2626;
+          border-color: #fecaca;
         }
 
         .loading-container {
@@ -815,16 +956,16 @@ export default function Admin() {
           align-items: center;
           gap: 1rem;
           padding: 3rem;
-          color: var(--secondary-500);
+          color: var(--text-muted);
         }
 
         .loading-spinner {
           width: 40px;
           height: 40px;
-          border: 3px solid var(--secondary-200);
-          border-top-color: var(--primary-500);
+          border: 3px solid var(--cream-200);
+          border-top-color: var(--gold-500);
           border-radius: 50%;
-          animation: spin 1s linear infinite;
+          animation: spin 0.8s linear infinite;
         }
 
         .empty-state {
@@ -838,13 +979,14 @@ export default function Admin() {
         }
 
         .empty-state h3 {
-          font-size: 1.125rem;
-          color: var(--secondary-900);
+          font-family: 'Merriweather', Georgia, serif;
+          font-size: 1.1rem;
+          color: var(--navy-700);
           margin-bottom: 0.5rem;
         }
 
         .empty-state p {
-          color: var(--secondary-500);
+          color: var(--text-muted);
         }
 
         @keyframes spin {
@@ -862,9 +1004,9 @@ export default function Admin() {
             display: flex;
             align-items: center;
             gap: 1rem;
-            padding: 1rem;
-            background: white;
-            border-bottom: 1px solid var(--secondary-200);
+            padding: 0.85rem 1rem;
+            background: var(--navy-700);
+            border-bottom: 1px solid rgba(200, 169, 81, 0.15);
             position: fixed;
             top: 0;
             left: 0;
@@ -879,10 +1021,10 @@ export default function Admin() {
             width: 40px;
             height: 40px;
             border: none;
-            background: var(--secondary-100);
-            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            color: var(--secondary-700);
+            color: var(--white);
           }
 
           .mobile-logo {
@@ -892,7 +1034,8 @@ export default function Admin() {
             text-decoration: none;
             font-size: 1.25rem;
             font-weight: 700;
-            color: var(--secondary-900);
+            color: var(--white);
+            font-family: 'Merriweather', Georgia, serif;
           }
 
           .sidebar-overlay {

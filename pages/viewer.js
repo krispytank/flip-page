@@ -83,10 +83,44 @@ export default function Viewer() {
         await loadPDF(fileUrl);
       } else if (documentInfo.mimetype.startsWith('image/')) {
         loadImages([fileUrl]);
-      } else if (documentInfo.mimetype.includes('presentation') || documentInfo.mimetype.includes('powerpoint')) {
+      } else if (documentInfo.mimetype.includes('presentation') || documentInfo.mimetype.includes('powerpoint') || documentInfo.mimetype.includes('opendocument.presentation')) {
         setPages([{
           type: 'placeholder',
-          content: `Presentation: ${documentInfo.title}\n\nThis is a PowerPoint presentation. Download it to view the full content.`,
+          content: `Presentation: ${documentInfo.title}\n\nThis is a presentation file. Download it to view the full content.`,
+          pageNumber: 1
+        }]);
+      } else if (documentInfo.mimetype.includes('word') || documentInfo.mimetype.includes('document') || documentInfo.mimetype.includes('msword')) {
+        setPages([{
+          type: 'placeholder',
+          content: `Document: ${documentInfo.title}\n\nThis is a Word document. Download it to view the full content.`,
+          pageNumber: 1
+        }]);
+      } else if (documentInfo.mimetype.includes('excel') || documentInfo.mimetype.includes('spreadsheet') || documentInfo.mimetype.includes('ms-excel')) {
+        setPages([{
+          type: 'placeholder',
+          content: `Spreadsheet: ${documentInfo.title}\n\nThis is an Excel spreadsheet. Download it to view the full content.`,
+          pageNumber: 1
+        }]);
+      } else if (documentInfo.mimetype === 'text/plain' || documentInfo.mimetype === 'text/csv') {
+        try {
+          const response = await fetch(fileUrl);
+          const text = await response.text();
+          setPages([{
+            type: 'placeholder',
+            content: text.length > 2000 ? text.substring(0, 2000) + '\n\n... (truncated)' : text,
+            pageNumber: 1
+          }]);
+        } catch {
+          setPages([{
+            type: 'placeholder',
+            content: `File: ${documentInfo.title}\n\nFile type: ${documentInfo.mimetype}`,
+            pageNumber: 1
+          }]);
+        }
+      } else if (documentInfo.mimetype === 'application/rtf') {
+        setPages([{
+          type: 'placeholder',
+          content: `Rich Text: ${documentInfo.title}\n\nThis is an RTF document. Download it to view the full content.`,
           pageNumber: 1
         }]);
       } else {
@@ -445,7 +479,10 @@ export default function Viewer() {
               <div className="preview-card">
                 <div className="preview-icon">
                   {documentInfo?.mimetype?.includes('pdf') ? '📕' :
-                   documentInfo?.mimetype?.startsWith('image/') ? '🖼️' : '📄'}
+                   documentInfo?.mimetype?.startsWith('image/') ? '🖼️' :
+                   documentInfo?.mimetype?.includes('presentation') || documentInfo?.mimetype?.includes('powerpoint') ? '📊' :
+                   documentInfo?.mimetype?.includes('word') || documentInfo?.mimetype?.includes('document') ? '📝' :
+                   documentInfo?.mimetype?.includes('excel') || documentInfo?.mimetype?.includes('spreadsheet') ? '📈' : '📄'}
                 </div>
                 <h2 className="preview-title">{documentTitle}</h2>
                 {documentInfo && (

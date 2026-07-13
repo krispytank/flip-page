@@ -80,13 +80,31 @@ async function handlePost(req, res) {
       maxFileSize: 50 * 1024 * 1024, // 50MB
       filter: ({ mimetype }) => {
         const allowedTypes = [
+          // PDF
           'application/pdf',
+          // Images
           'image/jpeg',
           'image/png',
           'image/gif',
           'image/webp',
+          'image/svg+xml',
+          'image/bmp',
+          'image/tiff',
+          'image/tiff-fx',
+          'image/x-icon',
+          'image/avif',
+          // Documents
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
           'application/vnd.ms-powerpoint',
-          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+          'text/plain',
+          'text/csv',
+          'application/rtf',
+          // Presentations
+          'application/vnd.oasis.opendocument.presentation',
         ];
         return allowedTypes.includes(mimetype);
       },
