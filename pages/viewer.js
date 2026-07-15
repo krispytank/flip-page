@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Head from 'next/head';
 import FlipBook from '../components/FlipBook';
 import NavigationControls from '../components/NavigationControls';
@@ -28,6 +28,7 @@ export default function Viewer() {
   const viewerRef = useRef(null);
   const containerRef = useRef(null);
   const touchStartRef = useRef(null);
+  const flipbookRef = useRef(null);
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -160,13 +161,13 @@ export default function Viewer() {
 
       const renderPage = async (pageNum) => {
         const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 0.7 });
+        const viewport = page.getViewport({ scale: 1.5 });
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         const context = canvas.getContext('2d');
         await page.render({ canvasContext: context, viewport }).promise;
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.75);
+        const dataUrl = canvas.toDataURL('image/png');
         canvas.width = 0;
         canvas.height = 0;
         return {
@@ -301,10 +302,10 @@ export default function Viewer() {
   const handleKeydown = (e) => {
     switch (e.key) {
       case 'ArrowLeft':
-        setCurrentPage(prev => Math.max(0, prev - 1));
+        flipbookRef.current?.goToPreviousPage();
         break;
       case 'ArrowRight':
-        setCurrentPage(prev => Math.min(pages.length - 1, prev + 1));
+        flipbookRef.current?.goToNextPage();
         break;
       case '+':
       case '=':
@@ -335,6 +336,25 @@ export default function Viewer() {
     window.addEventListener('keydown', handleKeydown);
     return () => window.removeEventListener('keydown', handleKeydown);
   }, [pages.length]);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const handleWheel = (e) => {
+      if (e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+        if (e.deltaY < 0) {
+          setTargetZoom(prev => Math.min(3, prev + 0.1));
+        } else {
+          setTargetZoom(prev => Math.max(0.25, prev - 0.1));
+        }
+      }
+    };
+
+    const el = containerRef.current;
+    el.addEventListener('wheel', handleWheel, { passive: false });
+    return () => el.removeEventListener('wheel', handleWheel);
+  }, []);
 
   useEffect(() => {
     if (pages.length === 0) return;
@@ -383,9 +403,9 @@ export default function Viewer() {
     const minSwipe = 50;
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > minSwipe) {
       if (dx < 0) {
-        setCurrentPage(prev => Math.min(pages.length - 1, prev + 1));
+        flipbookRef.current?.goToNextPage();
       } else {
-        setCurrentPage(prev => Math.max(0, prev - 1));
+        flipbookRef.current?.goToPreviousPage();
       }
     }
     touchStartRef.current = null;
@@ -528,6 +548,7 @@ export default function Viewer() {
               }}
             >
               <FlipBook
+                ref={flipbookRef}
                 pages={pages}
                 initialPage={currentPage}
                 onPageChange={handlePageChange}
@@ -544,8 +565,8 @@ export default function Viewer() {
             <NavigationControls
               currentPage={currentPage}
               totalPages={pages.length}
-              onPrev={() => setCurrentPage(prev => Math.max(0, prev - 1))}
-              onNext={() => setCurrentPage(prev => Math.min(pages.length - 1, prev + 1))}
+              onPrev={() => flipbookRef.current?.goToPreviousPage()}
+              onNext={() => flipbookRef.current?.goToNextPage()}
             />
             
             <ZoomControls
@@ -559,7 +580,7 @@ export default function Viewer() {
 
             <div className="keyboard-hints">
               <span>← → Navigate</span>
-              <span>+ - Zoom</span>
+              <span>Ctrl+Scroll Zoom</span>
               <span>F Fullscreen</span>
             </div>
           </footer>

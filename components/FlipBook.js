@@ -1,28 +1,36 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback, useImperativeHandle, forwardRef } from 'react'
 
-export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pageWidth = 800, pageHeight = 600 }) {
+const FLIP_DURATION = 400
+
+const FlipBook = forwardRef(function FlipBook({ pages = [], initialPage = 0, onPageChange, pageWidth = 800, pageHeight = 600 }, ref) {
   const [currentPage, setCurrentPage] = useState(initialPage)
   const [isFlipping, setIsFlipping] = useState(false)
-  const [flipDirection, setFlipDirection] = useState('next')
   const containerRef = useRef(null)
   const audioContextRef = useRef(null)
+  const currentPageRef = useRef(currentPage)
+
+  useEffect(() => {
+    currentPageRef.current = currentPage
+  }, [currentPage])
 
   useEffect(() => {
     setCurrentPage(initialPage)
   }, [initialPage])
 
   useEffect(() => {
-    // Initialize audio context for sound effects
     if (typeof window !== 'undefined') {
       audioContextRef.current = new (window.AudioContext || window.webkitAudioContext)()
     }
   }, [])
 
-  const playFlipSound = () => {
+  const playFlipSound = useCallback(() => {
     if (!audioContextRef.current) return
 
     try {
       const ctx = audioContextRef.current
+      if (ctx.state === 'suspended') {
+        ctx.resume()
+      }
       const now = ctx.currentTime
 
       const bufferSize = ctx.sampleRate * 0.15
@@ -61,45 +69,59 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
     } catch (error) {
       console.warn('Could not play flip sound:', error)
     }
-  }
+  }, [])
 
-  const goToNextPage = () => {
-    if (currentPage < pages.length - 1 && !isFlipping) {
+  const goToNextPage = useCallback(() => {
+    if (currentPageRef.current < pages.length - 1 && !isFlipping) {
       setIsFlipping(true)
-      setFlipDirection('next')
       playFlipSound()
-      
-      setTimeout(() => {
-        setCurrentPage(prev => prev + 1)
-        onPageChange?.(currentPage + 1)
-        setTimeout(() => setIsFlipping(false), 100)
-      }, 550)
-    }
-  }
 
-  const goToPreviousPage = () => {
-    if (currentPage > 0 && !isFlipping) {
+      setTimeout(() => {
+        setCurrentPage(prev => {
+          const next = prev + 1
+          onPageChange?.(next)
+          return next
+        })
+        setTimeout(() => setIsFlipping(false), 50)
+      }, FLIP_DURATION)
+    }
+  }, [isFlipping, pages.length, onPageChange, playFlipSound])
+
+  const goToPreviousPage = useCallback(() => {
+    if (currentPageRef.current > 0 && !isFlipping) {
       setIsFlipping(true)
-      setFlipDirection('previous')
       playFlipSound()
-      
-      setTimeout(() => {
-        setCurrentPage(prev => prev - 1)
-        onPageChange?.(currentPage - 1)
-        setTimeout(() => setIsFlipping(false), 100)
-      }, 550)
-    }
-  }
 
-  const handlePageClick = (index) => {
+      setTimeout(() => {
+        setCurrentPage(prev => {
+          const next = prev - 1
+          onPageChange?.(next)
+          return next
+        })
+        setTimeout(() => setIsFlipping(false), 50)
+      }, FLIP_DURATION)
+    }
+  }, [isFlipping, onPageChange, playFlipSound])
+
+  const handlePageClick = useCallback((e) => {
     if (isFlipping) return
 
-    if (index < currentPage) {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const clickX = e.clientX - rect.left
+    const halfWidth = rect.width / 2
+
+    if (clickX < halfWidth) {
       goToPreviousPage()
-    } else if (index > currentPage) {
+    } else {
       goToNextPage()
     }
-  }
+  }, [isFlipping, goToPreviousPage, goToNextPage])
+
+  useImperativeHandle(ref, () => ({
+    goToNextPage,
+    goToPreviousPage,
+    getCurrentPage: () => currentPageRef.current,
+  }), [goToNextPage, goToPreviousPage])
 
   const getPageStyle = (index) => {
     const diff = index - currentPage
@@ -108,19 +130,19 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
       return {
         transform: 'rotateY(0deg)',
         zIndex: 10,
-        transition: 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        transition: `transform ${FLIP_DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`
       }
     } else if (diff < 0) {
       return {
         transform: 'rotateY(-180deg)',
         zIndex: 5 + diff,
-        transition: 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        transition: `transform ${FLIP_DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`
       }
     } else {
       return {
         transform: 'rotateY(0deg)',
         zIndex: Math.max(1, 10 - diff),
-        transition: 'transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        transition: `transform ${FLIP_DURATION}ms cubic-bezier(0.25, 0.46, 0.45, 0.94)`
       }
     }
   }
@@ -129,7 +151,7 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
     if (page.type === 'image') {
       return (
         <div className="page-image">
-          <img src={page.src} alt={`Page ${index + 1}`} />
+          <img src={page.src} alt={`Page ${index + 1}`} draggable={false} />
         </div>
       )
     } else if (page.type === 'pdf') {
@@ -156,13 +178,21 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
             key={index}
             className={`page ${index === currentPage ? 'current' : ''} ${index < currentPage ? 'previous' : ''} ${index > currentPage ? 'next' : ''}`}
             style={getPageStyle(index)}
-            onClick={() => handlePageClick(index)}
+            data-page-index={index}
           >
             <div className="page-content">
-              <div className="page-front">
+              <div
+                className="page-front click-zone"
+                data-direction="previous"
+                onClick={handlePageClick}
+              >
                 {renderPageContent(page, index)}
               </div>
-              <div className="page-back">
+              <div
+                className="page-back click-zone"
+                data-direction="next"
+                onClick={handlePageClick}
+              >
                 {pages[index + 1] && renderPageContent(pages[index + 1], index + 1)}
               </div>
             </div>
@@ -178,6 +208,7 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
           display: flex;
           justify-content: center;
           align-items: center;
+          user-select: none;
         }
 
         .flipbook {
@@ -212,6 +243,14 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
           transform: rotateY(180deg);
         }
 
+        .click-zone {
+          cursor: pointer;
+        }
+
+        .click-zone:hover {
+          opacity: 0.98;
+        }
+
         .page-image {
           width: 100%;
           height: 100%;
@@ -224,6 +263,8 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: crisp-edges;
         }
 
         .page-pdf {
@@ -275,4 +316,6 @@ export default function FlipBook({ pages = [], initialPage = 0, onPageChange, pa
       `}</style>
     </div>
   )
-}
+})
+
+export default FlipBook
