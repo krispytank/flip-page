@@ -221,19 +221,19 @@ export default function Admin() {
           <div className="sidebar-header">
             <Link href="/" className="logo">
               <span className="logo-icon">📖</span>
-              <span className="logo-text">FlipPage</span>
+              <span className="logo-text" style={{ color: '#ffffff' }}>FlipPage</span>
             </Link>
           </div>
           
           <nav className="sidebar-nav">
-            <Link href="/" className="nav-item">
+            <Link href="/" className="nav-item" style={{ color: '#ffffff' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
               </svg>
               Home
             </Link>
-            <Link href="/admin" className="nav-item active">
+            <Link href="/admin" className="nav-item active" style={{ color: '#ffffff' }}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
                 <polyline points="14 2 14 8 20 8"></polyline>
@@ -242,7 +242,7 @@ export default function Admin() {
               </svg>
               Upload Documents
             </Link>
-            <button className="nav-item logout-btn" onClick={handleLogout}>
+            <button className="nav-item logout-btn" style={{ color: '#ffffff' }} onClick={handleLogout}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                 <polyline points="16 17 21 12 16 7"></polyline>
@@ -530,7 +530,7 @@ export default function Admin() {
           align-items: center;
           gap: 0.75rem;
           padding: 0.8rem 1rem;
-          color: rgba(255, 255, 255, 0.75);
+          color: #ffffff !important;
           text-decoration: none;
           border-radius: var(--radius-md);
           transition: all var(--transition-fast);
@@ -547,7 +547,7 @@ export default function Admin() {
 
         .nav-item:hover {
           background: rgba(255, 255, 255, 0.1);
-          color: var(--white);
+          color: #ffffff !important;
         }
 
         .nav-item.active {

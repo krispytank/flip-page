@@ -137,7 +137,7 @@ export default function Home() {
             </div>
             <div className="hero-actions">
               <a href="#catalogue" className="btn btn-primary">Browse Library</a>
-              <Link href="/login" className="btn btn-hero">Upload Documents</Link>
+              <Link href="/login" className="btn btn-hero" style={{ color: '#ffffff' }}>Upload Documents</Link>
             </div>
           </div>
         </div>

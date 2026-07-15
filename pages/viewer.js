@@ -413,7 +413,7 @@ export default function Viewer() {
             <button onClick={() => { setError(null); loadSampleDocument(); }} className="btn btn-primary">
               Load Sample Document
             </button>
-            <a href="/" className="btn btn-secondary">
+            <a href="/" className="btn btn-secondary" style={{ color: '#ffffff' }}>
               Back to Library
             </a>
           </div>

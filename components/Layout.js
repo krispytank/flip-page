@@ -47,9 +47,9 @@ export default function Layout({ children }) {
           </Link>
 
           <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
-            <Link href="/" className="nav-link" onClick={() => setMenuOpen(false)}>Home</Link>
-            <Link href="/#catalogue" className="nav-link" onClick={() => setMenuOpen(false)}>Catalogue</Link>
-            <Link href="/login" className="nav-link" onClick={() => setMenuOpen(false)}>Upload</Link>
+            <Link href="/" className="nav-link" style={{ color: '#ffffff' }} onClick={() => setMenuOpen(false)}>Home</Link>
+            <Link href="/#catalogue" className="nav-link" style={{ color: '#ffffff' }} onClick={() => setMenuOpen(false)}>Catalogue</Link>
+            <Link href="/login" className="nav-link" style={{ color: '#ffffff' }} onClick={() => setMenuOpen(false)}>Upload</Link>
           </nav>
 
           <button className="menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
@@ -214,12 +214,12 @@ export default function Layout({ children }) {
 
         .main-nav {
           display: flex;
-          gap: 0.25rem;
+          gap: 0.75rem;
         }
 
         .nav-link {
           padding: 0.6rem 1.25rem;
-          color: rgba(255,255,255,0.95);
+          color: #FFFFF0;
           font-size: 0.95rem;
           font-weight: 600;
           border-radius: var(--radius-sm);
@@ -229,7 +229,7 @@ export default function Layout({ children }) {
 
         .nav-link:hover {
           background: rgba(255,255,255,0.15);
-          color: var(--white);
+          color: #E9DCC9;
         }
 
         .menu-toggle {
