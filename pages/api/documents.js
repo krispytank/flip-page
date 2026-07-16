@@ -119,13 +119,14 @@ async function handlePost(req, res) {
 
     const file = files.document[0];
     const id = uuidv4();
-    const title = fields.title[0] || path.basename(file.originalFilename, path.extname(file.originalFilename));
+    const originalName = file.originalFilename || 'unnamed';
+    const title = fields.title[0] || path.basename(originalName, path.extname(originalName));
     const description = fields.description[0] || '';
     const category = fields.category[0] || 'Documents';
     const tags = fields.tags[0] ? JSON.stringify(fields.tags[0].split(',').map(t => t.trim())) : '[]';
 
     // Rename file with UUID
-    const ext = path.extname(file.originalFilename);
+    const ext = path.extname(originalName) || '.bin';
     const newFilename = `${id}${ext}`;
     const newPath = path.join(uploadDir, newFilename);
     
@@ -139,7 +140,7 @@ async function handlePost(req, res) {
       title,
       description,
       newFilename,
-      file.originalFilename,
+      originalName,
       file.mimetype,
       stats.size,
       category,

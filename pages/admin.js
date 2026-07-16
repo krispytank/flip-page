@@ -49,6 +49,36 @@ export default function Admin() {
     }
   };
 
+  const ALLOWED_MIMES = [
+    'application/pdf',
+    'image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml',
+    'image/bmp', 'image/tiff', 'image/tiff-fx', 'image/x-icon', 'image/avif',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/plain', 'text/csv', 'application/rtf',
+    'application/vnd.oasis.opendocument.presentation',
+  ];
+
+  const MIME_TO_CATEGORY = {
+    'application/pdf': 'PDFs',
+    'image/jpeg': 'Images', 'image/png': 'Images', 'image/gif': 'Images',
+    'image/webp': 'Images', 'image/svg+xml': 'Images', 'image/bmp': 'Images',
+    'image/tiff': 'Images', 'image/tiff-fx': 'Images', 'image/x-icon': 'Images',
+    'image/avif': 'Images',
+    'application/msword': 'Documents',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Documents',
+    'application/vnd.ms-excel': 'Documents',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Documents',
+    'application/vnd.ms-powerpoint': 'Presentations',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'Presentations',
+    'application/vnd.oasis.opendocument.presentation': 'Presentations',
+    'text/plain': 'Documents', 'text/csv': 'Documents', 'application/rtf': 'Documents',
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -56,18 +86,31 @@ export default function Admin() {
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setSelectedFile(file);
-      setFormData(prev => ({ ...prev, title: prev.title || file.name.replace(/\.[^/.]+$/, '') }));
-      
-      // Create preview for images
-      if (file.type.startsWith('image/')) {
-        const reader = new FileReader();
-        reader.onload = (e) => setPreview(e.target.result);
-        reader.readAsDataURL(file);
-      } else {
-        setPreview(null);
-      }
+    if (!file) return;
+
+    if (!ALLOWED_MIMES.includes(file.type)) {
+      setMessage({
+        type: 'error',
+        text: `"${file.name}" (${file.type || 'unknown type'}) is not a supported file type. Please upload PDF, images, Word, Excel, PowerPoint, or text files.`
+      });
+      e.target.value = '';
+      return;
+    }
+
+    setMessage({ type: '', text: '' });
+    setSelectedFile(file);
+    setFormData(prev => ({
+      ...prev,
+      title: prev.title || file.name.replace(/\.[^/.]+$/, ''),
+      category: MIME_TO_CATEGORY[file.type] || prev.category
+    }));
+    
+    if (file.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = (e) => setPreview(e.target.result);
+      reader.readAsDataURL(file);
+    } else {
+      setPreview(null);
     }
   };
 

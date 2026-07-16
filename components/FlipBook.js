@@ -151,7 +151,11 @@ const FlipBook = forwardRef(function FlipBook({ pages = [], initialPage = 0, onP
     if (page.type === 'image') {
       return (
         <div className="page-image">
-          <img src={page.src} alt={`Page ${index + 1}`} draggable={false} />
+          <img
+            src={page.src}
+            alt={`Page ${index + 1}`}
+            draggable={false}
+          />
         </div>
       )
     } else if (page.type === 'pdf') {
@@ -254,17 +258,14 @@ const FlipBook = forwardRef(function FlipBook({ pages = [], initialPage = 0, onP
         .page-image {
           width: 100%;
           height: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
+          overflow: hidden;
         }
 
         .page-image img {
+          display: block;
           max-width: 100%;
           max-height: 100%;
           object-fit: contain;
-          image-rendering: -webkit-optimize-contrast;
-          image-rendering: crisp-edges;
         }
 
         .page-pdf {

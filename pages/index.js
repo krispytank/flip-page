@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
+import { useMemo } from 'react';
 
 function getDeviceId() {
   if (typeof document === 'undefined') return null;
@@ -68,6 +69,15 @@ export default function Home() {
                          doc.description?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const highlightText = (text, query) => {
+    if (!query || !text) return text;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, i) =>
+      regex.test(part) ? <mark key={i} className="search-highlight">{part}</mark> : part
+    );
+  };
 
   const formatFileSize = (bytes) => {
     if (bytes === 0) return '0 Bytes';
@@ -256,9 +266,9 @@ export default function Home() {
                       {doc.category_name}
                     </span>
                   </div>
-                  <h3 className="doc-card-title">{doc.title}</h3>
+                  <h3 className="doc-card-title">{highlightText(doc.title, searchQuery)}</h3>
                   {doc.description && (
-                    <p className="doc-card-desc">{doc.description}</p>
+                    <p className="doc-card-desc">{highlightText(doc.description, searchQuery)}</p>
                   )}
                   <div className="doc-card-meta">
                     <span>{formatFileSize(doc.size)}</span>
@@ -676,6 +686,14 @@ export default function Home() {
           -webkit-box-orient: vertical;
           overflow: hidden;
           line-height: 1.5;
+        }
+
+        :global(.search-highlight) {
+          background: #fef08a;
+          color: #854d0e;
+          padding: 0 2px;
+          border-radius: 2px;
+          font-weight: 600;
         }
 
         .doc-card-meta {

@@ -73,7 +73,10 @@ export default function Viewer() {
   };
 
   const loadDocumentContent = async () => {
-    if (!documentInfo) return;
+    if (!documentInfo) {
+      setError('Document information not loaded. Please try again.');
+      return;
+    }
     try {
       setContentLoading(true);
       setError(null);
@@ -140,14 +143,28 @@ export default function Viewer() {
     }
   };
 
+  const PDF_RENDER_SCALE = 3.0;
+
   const loadPDF = async (url) => {
+    let pdfjsLib;
     try {
-      const pdfjsLib = await import('pdfjs-dist');
+      pdfjsLib = await import('pdfjs-dist');
+    } catch (importErr) {
+      throw new Error('Failed to load PDF library: ' + importErr.message);
+    }
+
+    try {
       pdfjsLib.GlobalWorkerOptions.workerSrc = '/pdf-worker/pdf.worker.min.js';
 
-      const response = await fetch(url);
+      let response;
+      try {
+        response = await fetch(url);
+      } catch (fetchErr) {
+        throw new Error('Failed to fetch PDF file: ' + fetchErr.message);
+      }
+
       if (!response.ok) {
-        throw new Error('Failed to fetch PDF file');
+        throw new Error('PDF file not found (HTTP ' + response.status + ')');
       }
       
       const arrayBuffer = await response.arrayBuffer();
@@ -155,17 +172,25 @@ export default function Viewer() {
         throw new Error('PDF file is empty');
       }
       
-      const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-      const pdf = await loadingTask.promise;
+      let pdf;
+      try {
+        const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+        pdf = await loadingTask.promise;
+      } catch (parseErr) {
+        throw new Error('Failed to parse PDF: ' + parseErr.message);
+      }
+
       const totalPages = pdf.numPages;
 
       const renderPage = async (pageNum) => {
         const page = await pdf.getPage(pageNum);
-        const viewport = page.getViewport({ scale: 1.5 });
+        const viewport = page.getViewport({ scale: PDF_RENDER_SCALE });
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         const context = canvas.getContext('2d');
+        context.imageSmoothingEnabled = true;
+        context.imageSmoothingQuality = 'high';
         await page.render({ canvasContext: context, viewport }).promise;
         const dataUrl = canvas.toDataURL('image/png');
         canvas.width = 0;
@@ -174,8 +199,10 @@ export default function Viewer() {
           type: 'image',
           src: dataUrl,
           pageNumber: pageNum,
-          width: viewport.width,
-          height: viewport.height
+          width: viewport.width / PDF_RENDER_SCALE,
+          height: viewport.height / PDF_RENDER_SCALE,
+          renderWidth: viewport.width,
+          renderHeight: viewport.height
         };
       };
 
@@ -282,8 +309,11 @@ export default function Viewer() {
     const padding = 64;
     const availableWidth = container.clientWidth - padding;
     const availableHeight = container.clientHeight - padding;
-    const scaleX = availableWidth / pageDimensions.width;
-    const scaleY = availableHeight / pageDimensions.height;
+    const firstPage = pages[0];
+    const renderW = firstPage?.renderWidth || pageDimensions.width;
+    const renderH = firstPage?.renderHeight || pageDimensions.height;
+    const scaleX = availableWidth / renderW;
+    const scaleY = availableHeight / renderH;
     return Math.min(scaleX, scaleY, 1);
   };
 
@@ -359,18 +389,10 @@ export default function Viewer() {
   useEffect(() => {
     if (pages.length === 0) return;
 
-    const firstPage = pages[0];
+        const firstPage = pages[0];
     if (firstPage.width && firstPage.height) {
       setPageDimensions({ width: firstPage.width, height: firstPage.height });
       return;
-    }
-
-    if (firstPage.type === 'image' && firstPage.src) {
-      const img = new Image();
-      img.onload = () => {
-        setPageDimensions({ width: img.naturalWidth, height: img.naturalHeight });
-      };
-      img.src = firstPage.src;
     }
   }, [pages]);
 
@@ -552,8 +574,8 @@ export default function Viewer() {
                 pages={pages}
                 initialPage={currentPage}
                 onPageChange={handlePageChange}
-                pageWidth={pageDimensions.width}
-                pageHeight={pageDimensions.height}
+                pageWidth={pages[0]?.renderWidth || pageDimensions.width}
+                pageHeight={pages[0]?.renderHeight || pageDimensions.height}
               />
             </div>
           )}
