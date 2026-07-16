@@ -112,12 +112,16 @@ async function handlePost(req, res) {
 
     const { fields, files } = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
-        if (err) reject(err);
+        if (err) return reject(err);
         resolve({ fields, files });
       });
     });
 
     const file = files.document[0];
+    if (!file) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
     const id = uuidv4();
     const originalName = file.originalFilename || 'unnamed';
     const title = fields.title[0] || path.basename(originalName, path.extname(originalName));
@@ -125,12 +129,16 @@ async function handlePost(req, res) {
     const category = fields.category[0] || 'Documents';
     const tags = fields.tags[0] ? JSON.stringify(fields.tags[0].split(',').map(t => t.trim())) : '[]';
 
-    // Rename file with UUID
     const ext = path.extname(originalName) || '.bin';
     const newFilename = `${id}${ext}`;
     const newPath = path.join(uploadDir, newFilename);
     
-    fs.renameSync(file.filepath, newPath);
+    try {
+      fs.renameSync(file.filepath, newPath);
+    } catch (renameErr) {
+      fs.copyFileSync(file.filepath, newPath);
+      fs.unlinkSync(file.filepath);
+    }
 
     // Get file size
     const stats = fs.statSync(newPath);
@@ -151,7 +159,7 @@ async function handlePost(req, res) {
     res.status(201).json(document);
   } catch (error) {
     console.error('Error uploading document:', error);
-    res.status(500).json({ error: 'Failed to upload document' });
+    res.status(500).json({ error: 'Failed to upload document: ' + (error.message || 'Unknown error') });
   }
 }
 
@@ -168,10 +176,13 @@ async function handleDelete(req, res) {
       return res.status(404).json({ error: 'Document not found' });
     }
 
-    // Delete file from filesystem
     const filePath = path.join(process.cwd(), 'public', 'documents', document.filename);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    try {
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
+    } catch (fileErr) {
+      console.warn('Could not delete file from disk:', fileErr.message);
     }
 
     deleteDocument.run(id);

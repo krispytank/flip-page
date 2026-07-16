@@ -81,7 +81,7 @@ export default function Viewer() {
       setContentLoading(true);
       setError(null);
       
-      const fileUrl = `/documents/${documentInfo.filename}`;
+      const fileUrl = `/api/serve?filename=${encodeURIComponent(documentInfo.filename)}`;
       
       if (documentInfo.mimetype.includes('pdf')) {
         await loadPDF(fileUrl);
